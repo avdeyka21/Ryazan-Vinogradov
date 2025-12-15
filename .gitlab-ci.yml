@@ -1,0 +1,39 @@
+variables:
+    ARTIFACTS_DIR: artifacts
+    DOCKER_IMAGE: ubuntu
+    WORKDIR: ./
+    CIDIR: .ci
+# Сначала должны собраться и протестироваться тесты.
+# Основной билд – только после тестов
+stages:
+    - test
+    - build
+# Ставим компилятор в раннер и запускаем файл с тестами
+test:
+    stage: test
+    image: $DOCKER_IMAGE
+    script:
+    - |
+        apt-get update
+        apt-get install -y g++
+        g++ --version
+        g++ tests.cpp -o tests
+        ./tests
+# На случай, если программа генерирует файлы,
+# И нам нужно посмотреть их во внешнем окружении
+# artifacts:
+# paths:
+# - $ARTIFACTS_DIR/
+build:
+    stage: build
+    image: $DOCKER_IMAGE
+    script:
+    - |
+        apt-get update
+        apt-get install -y g++
+        g++ --version
+        g++ main.cpp -o main
+        ./main
+        # artifacts:
+            # paths:
+                # - $ARTIFACTS_DIR/
